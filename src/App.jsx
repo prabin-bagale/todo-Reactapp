@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react'
 import './App.css'
 import Navbar from './components/Navbar'
@@ -11,7 +10,7 @@ function App() {
 
 const[todo,setTodo]=useState("")
 const[todos,setTodos]=useState([])
-
+const[dueDate,setDueDate]=useState("")
 const[showFinished,setshowFinished]=useState(true)
 
 
@@ -48,12 +47,16 @@ const handleDelete = (e,id) =>{
 }
 
 const handleAdd = () =>{
-  setTodos([...todos,{ id:uuidv4(),todo,isCompleted: false}])
+  setTodos([...todos,{ id:uuidv4(),todo,isCompleted: false, dueDate}])
   setTodo("")
+  setDueDate("")
   saveTo()
 }
 const handleChange = (e) =>{
 setTodo(e.target.value)
+}
+const handleDateChange = (e) => {
+  setDueDate(e.target.value)
 }
 const handleCheckbox = (e) =>{
 let id = e.target.name;
@@ -73,9 +76,17 @@ saveTo()
     <h1 className='font-bold text-center text-3xl'>iTask - Manage Your Daily life Task</h1>
       <div className="addtodo my-2 flex flex-col gap-4">
         <h2 className='text-2xl font-bold'>Add a Todo</h2>
-        <div className="flex">
-        <input type="text" onChange={handleChange} value={todo}className='w-full bg-white rounded px-5 py-1' />
-        <button  onClick={handleAdd} disabled={todo.length <=3}className='bg-violet-800 mx-2 hover:bg-violet-950 p-4 py-2 text-sm font-bold disabled:bg=violet=700 rounded-full text-white'>Save</button>
+        <div className="flex flex-col gap-2">
+          <div className="flex">
+            <input type="text" onChange={handleChange} value={todo} className='w-full bg-white rounded px-5 py-1' placeholder="Enter your todo" />
+            <button onClick={handleAdd} disabled={todo.length <=3} className='bg-violet-800 mx-2 hover:bg-violet-950 p-4 py-2 text-sm font-bold disabled:bg=violet=700 rounded-full text-white'>Save</button>
+          </div>
+          <input 
+            type="datetime-local" 
+            onChange={handleDateChange} 
+            value={dueDate}
+            className='w-full bg-white rounded px-5 py-1'
+          />
         </div>
       </div>
       <input className=" my-4" id="show" onChange={toggleFinished} type="checkbox" checked={showFinished} /> 
@@ -89,7 +100,14 @@ saveTo()
         <div key={item.id} className="todo flex justify-between my-3">
           <div className='flex gap-5'>
           <input onChange={handleCheckbox} type="checkbox" checked={item.isCompleted} name={item.id} id='' />
-        <div className={item.isCompleted?"line-through":""}>{item.todo}</div>
+        <div className="flex flex-col">
+          <div className={item.isCompleted?"line-through":""}>{item.todo}</div>
+          {item.dueDate && (
+            <div className="text-sm text-gray-600">
+              Due: {new Date(item.dueDate).toLocaleString()}
+            </div>
+          )}
+        </div>
         </div>
         <div className="buttons flex h-full">
           <button onClick={(e)=>{handleEdit(e,item.id)}}className='bg-violet-800 hover:bg-violet-950 p-2 py-1 text-sm font-bold rounded-md text-white mx-2'><MdOutlineModeEdit /></button>
